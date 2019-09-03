@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="false">
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder charset="UTF-8">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} |${HOSTNAME}| [%thread] %-5level %logger{72}:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="dailyRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>false</prudent>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${log.path}/${project.artifactId}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--
+            <fileNamePattern>/Users/Yang/workspaces/logs/ifp-channel.%d{yyyy-MM-dd}.log</fileNamePattern>
+             -->
+            <!-- keep 365 days' worth of history -->
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+
+        <!--
+       <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+           <maxFileSize>10MB</maxFileSize>
+       </triggeringPolicy>
+        -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} |${HOSTNAME}| [%thread] %-5level %logger:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="logstash"
+              class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${logstash.destination.host}</destination>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                    <timestamp>
+                         <timeZone>UTC</timeZone>
+                    </timestamp>
+                    <pattern>
+                        <pattern>
+                            {
+                                "hostname":"${HOSTNAME}",
+                                "service":"${project.artifactId}",
+                                "thread":"%thread",
+                                "level":"%level",
+                                "class":"%logger{40}",
+                                "message":"%message"
+                            }
+                        </pattern>
+                    </pattern>
+            </providers>
+        </encoder>
+    </appender>
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.quartz" level="ERROR"/>
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="dailyRollingFile"/>
+        <appender-ref ref="logstash" />
+    </root>
+</configuration>

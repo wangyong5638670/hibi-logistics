@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.record.RecordPlanMapper" >
+  <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.record.RecordPlan" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="DATE" property="date" jdbcType="VARCHAR" />
+    <result column="PLAN_ID" property="planId" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="CYCLE" property="cycle" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+    <result column="SEQ" property="seq" jdbcType="INTEGER" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+
+  <insert id="newRecordPlans">
+    INSERT IGNORE INTO t_record_plan
+        (ID, DATE, PLAN_ID, NAME, CYCLE, TYPE, SITE_ID, SEQ,STATUS, DESCRIPTION, CREATED_TIME)
+      SELECT
+        CONCAT(#{date,jdbcType=VARCHAR},p.ID),
+        #{date,jdbcType=VARCHAR},
+		p.ID,
+		p.NAME,
+		P.CYCLE,
+		P.TYPE,
+		P.SITE_ID,
+		P.SEQ,
+		'TODO',
+		P.REMARK,
+        now()
+      FROM
+		t_plan p
+      WHERE
+        p.STATUS = 'NORMAL'
+	    AND p.ID IN
+    <foreach item="item" index="index" collection="planIds" open="(" separator="," close=")">
+      #{item,jdbcType=VARCHAR}
+    </foreach>
+  </insert>
+
+    <!-- 根据计划编号和日期查询 -->
+    <select id="query" resultMap="BaseResultMap">
+        SELECT * FROM t_record_plan
+        WHERE PLAN_ID = #{planId,jdbcType=VARCHAR}
+        and DATE = #{date,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="queryRecordPlan" resultMap="BaseResultMap">
+        SELECT * FROM t_record_plan
+        WHERE TYPE = #{type,jdbcType=VARCHAR}
+        AND DATE = #{date,jdbcType=VARCHAR}
+        AND SITE_ID = #{siteId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="queryByPlanId" resultMap="BaseResultMap">
+        SELECT * FROM t_record_plan
+        <where>
+            PLAN_ID = #{planId,jdbcType=VARCHAR}
+        </where>
+    </select>
+
+  <update id="update">
+      update t_record_plan set STATUS = #{paramValue,jdbcType=VARCHAR}
+      WHERE PLAN_ID = #{planId,jdbcType=VARCHAR}
+      AND DATE = #{date,jdbcType=VARCHAR}
+      AND STATUS = #{status,jdbcType=VARCHAR}
+  </update>
+
+    <select id="planIds" resultType="java.lang.String">
+        SELECT PLAN_ID FROM t_record_plan
+        WHERE STATUS = 'TODO'
+        AND DATE = #{date,jdbcType=VARCHAR}
+    </select>
+
+
+</mapper>

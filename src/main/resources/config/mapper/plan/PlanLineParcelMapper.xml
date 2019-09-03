@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.plan.PlanLineParcelMapper" >
+  <!--Basic resultMap-->
+  <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.plan.PlanLineParcel" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="LINE_ID" property="lineId" jdbcType="VARCHAR" />
+    <result column="PARCEL_ID" property="parcelId" jdbcType="VARCHAR" />
+    <result column="PARCEL_NAME" property="parcelName" jdbcType="VARCHAR" />
+    <result column="PARCEL_LEVEL" property="parcelLevel" jdbcType="VARCHAR" />
+    <result column="STAFF_ID" property="staffId" jdbcType="VARCHAR" />
+    <result column="STAFF_NAME" property="staffName" jdbcType="VARCHAR" />
+    <result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+    <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <!--全字段-->
+  <sql id="Field-ALL">
+    ID,LINE_ID,PARCEL_ID,PARCEL_NAME,PARCEL_LEVEL,STAFF_ID,STAFF_NAME,GROUP_ID,CREATED_TIME
+  </sql>
+
+  <!--获取线路的袋信息-->
+  <select id="listWithPlanLineId" resultMap="BaseResultMap">
+    SELECT <include refid="Field-ALL"/> FROM t_plan_line_parcel
+    <where>
+      LINE_ID = #{planLineId}
+    </where>
+  </select>
+
+  <!--获取线路的袋信息-->
+  <select id="listGroupsWithPlanLineId" resultMap="BaseResultMap">
+    SELECT <include refid="Field-ALL"/> FROM t_plan_line_parcel
+    <where>
+      LINE_ID = #{planLineId}
+      AND GROUP_ID IS NOT NULL
+    </where>
+  </select>
+
+  <!--出入库计划线路——删除所有袋-->
+  <delete id="deleteWithPlanLineId" >
+    DELETE FROM t_plan_line_parcel
+    <where>
+      LINE_ID = #{planLineId}
+    </where>
+  </delete>
+
+</mapper>

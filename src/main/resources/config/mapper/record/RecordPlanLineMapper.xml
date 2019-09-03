@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.record.RecordPlanLineMapper" >
+  <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.record.RecordPlanLine" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="DATE" property="date" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_ID" property="planLineId" jdbcType="VARCHAR" />
+    <result column="PLAN_ID" property="planId" jdbcType="VARCHAR" />
+    <result column="PLAN_NAME" property="planName" jdbcType="VARCHAR" />
+    <result column="LINE_ID" property="lineId" jdbcType="VARCHAR" />
+    <result column="LINE_NAME" property="lineName" jdbcType="VARCHAR" />
+    <result column="PARCEL_NUMBER" property="parcelNumber" jdbcType="INTEGER" />
+    <result column="PARCEL_GROUP" property="parcelGroup" jdbcType="TINYINT" />
+    <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <insert id="newRecordPlanLines">
+    INSERT INTO t_record_plan_line
+      (ID, DATE, PLAN_LINE_ID, PLAN_ID, PLAN_NAME, LINE_ID, LINE_NAME, PARCEL_NUMBER, PARCEL_GROUP, CREATED_TIME,STATUS)
+    SELECT
+      CONCAT(#{date,jdbcType=VARCHAR},l.ID),
+      #{date,jdbcType=VARCHAR},
+      l.ID,
+      l.PLAN_ID,
+      l.PLAN_NAME,
+      l.LINE_ID,
+      l.LINE_NAME,
+      l.PARCEL_NUMBER,
+      l.PARCEL_GROUP,
+      now(),
+      'TODO'
+    FROM
+      t_plan_line l
+    WHERE
+     l.STATUS = 'NORMAL'
+     AND l.PLAN_ID IN
+    (
+      SELECT
+          p.ID
+      FROM
+          t_plan p
+      WHERE
+      P.STATUS = 'NORMAL'
+      AND p.ID IN
+      <foreach item="item" index="index" collection="planIds" open="(" separator="," close=")">
+        #{item,jdbcType=VARCHAR}
+      </foreach>
+    )
+
+  </insert>
+
+  <!-- 根据计划编号和日期查询 -->
+  <select id="query" resultMap="BaseResultMap">
+    SELECT * FROM t_record_plan_line
+    WHERE LINE_ID = #{lineId,jdbcType=VARCHAR}
+    AND PLAN_ID = #{planId,jdbcType=VARCHAR}
+    AND DATE = #{date,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 根据计划编号,状态和日期查询 -->
+  <select id="findRecordPlanLine" resultMap="BaseResultMap">
+    SELECT * FROM t_record_plan_line
+    WHERE STATUS = #{status,jdbcType=VARCHAR}
+    AND PLAN_ID = #{planId,jdbcType=VARCHAR}
+    AND DATE = #{date,jdbcType=VARCHAR}
+  </select>
+
+
+  <!-- 根据计划编号和日期查询 -->
+  <select id="listRecordPlanLines" resultMap="BaseResultMap">
+    SELECT * FROM t_record_plan_line
+    WHERE PLAN_ID = #{planId,jdbcType=VARCHAR}
+    AND DATE = #{date,jdbcType=VARCHAR}
+    AND STATUS = #{status,jdbcType=VARCHAR}
+  </select>
+
+  <update id="update">
+      update t_record_plan_line set STATUS = #{paramValue,jdbcType=VARCHAR}
+      WHERE PLAN_ID = #{planId,jdbcType=VARCHAR}
+      AND DATE = #{date,jdbcType=VARCHAR}
+      AND STATUS = #{status,jdbcType=VARCHAR}
+  </update>
+
+
+</mapper>

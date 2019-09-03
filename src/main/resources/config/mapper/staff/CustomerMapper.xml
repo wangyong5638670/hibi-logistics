@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.staff.CustomerMapper">
+    <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.staff.Customer">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="SHORT_NAME" property="shortName" jdbcType="VARCHAR"/>
+        <result column="PROVINCE" property="province" jdbcType="VARCHAR"/>
+        <result column="CITY" property="city" jdbcType="VARCHAR"/>
+        <result column="DISTRICT" property="district" jdbcType="VARCHAR"/>
+        <result column="ADDRESS" property="address" jdbcType="VARCHAR"/>
+        <result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR"/>
+        <result column="CONTACT_MOBILE" property="contactMobile" jdbcType="VARCHAR"/>
+        <result column="CONTACT_TELEPHONE" property="contactTelephone" jdbcType="VARCHAR"/>
+        <result column="CONTACT_FAX" property="contactFax" jdbcType="VARCHAR"/>
+        <result column="CONTACT_EMAIL" property="contactEmail" jdbcType="VARCHAR"/>
+        <result column="POST_CODE" property="postCode" jdbcType="VARCHAR"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR"/>
+        <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: hibi-springcloud-logistics
+  cloud:
+    consul:
+      host: ${consul.host}
+      port: ${consul.port}
+      discovery:
+        instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        service-name: ${spring.application.name}
+        register: true
+        prefer-ip-address: true
+        tags: urlprefix-/${spring.application.name}
+        health-check-path: /actuator/health
+        health-check-interval: 1s
+#        ip-address: 192.168.56.1

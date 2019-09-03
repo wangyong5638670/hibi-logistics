@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.record.RecordLineGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.record.RecordLineGroup" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="DATE" property="date" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_GROUP_ID" property="planLineGroupId" jdbcType="VARCHAR" />
+    <result column="TOTAL" property="total" jdbcType="INTEGER" />
+    <result column="MIN_NUM" property="minNum" jdbcType="INTEGER" />
+  </resultMap>
+
+
+  <insert id="newRecordLineGroups">
+    INSERT IGNORE INTO t_record_line_group
+    (ID, DATE, PLAN_LINE_GROUP_ID, TOTAL, MIN_NUM)
+    SELECT
+    CONCAT(#{date,jdbcType=VARCHAR},l.ID),
+    #{date,jdbcType=VARCHAR},
+    l.ID,
+    l.TOTAL,
+    l.MIN_NUM
+    FROM
+    t_plan_line_group l
+
+  </insert>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.plan.PlanLineMapper">
+    <!--Basic resultMap-->
+    <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.plan.PlanLine">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="PLAN_ID" property="planId" jdbcType="VARCHAR"/>
+        <result column="PLAN_NAME" property="planName" jdbcType="VARCHAR"/>
+        <result column="LINE_ID" property="lineId" jdbcType="VARCHAR"/>
+        <result column="LINE_NAME" property="lineName" jdbcType="VARCHAR"/>
+        <result column="PARCEL_NUMBER" property="parcelNumber" jdbcType="INTEGER"/>
+        <result column="PARCEL_GROUP" property="parcelGroup" jdbcType="TINYINT"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--全字段-->
+    <sql id="Field-ALL">
+        ID,PLAN_ID,PLAN_NAME,LINE_ID,LINE_NAME,PARCEL_NUMBER,PARCEL_GROUP,STATUS,CREATED_TIME
+    </sql>
+
+    <!--获取出入库计划线路-->
+    <select id="listWithPlanIdLineId" resultMap="BaseResultMap">
+        SELECT <include refid="Field-ALL"/> FROM t_plan_line
+        <where>
+            PLAN_ID = #{planId}
+            AND LINE_ID = #{lineId}
+        </where>
+    </select>
+
+    <!--获取出入库计划下所有的线路-->
+    <select id="listWithPlanId" resultMap="BaseResultMap">
+        SELECT <include refid="Field-ALL"/> FROM t_plan_line
+        <where>
+            PLAN_ID = #{planId}
+        </where>
+    </select>
+
+</mapper>

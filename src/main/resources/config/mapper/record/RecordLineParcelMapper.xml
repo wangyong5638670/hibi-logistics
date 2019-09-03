@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.record.RecordLineParcelMapper" >
+  <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.record.RecordLineParcel" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="DATE" property="date" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_PARCEL_ID" property="planLineParcelId" jdbcType="VARCHAR" />
+    <result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+    <result column="SITE_NAME" property="siteName" jdbcType="VARCHAR" />
+    <result column="PLAN_ID" property="planId" jdbcType="VARCHAR" />
+    <result column="PLAN_NAME" property="planName" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_ID" property="planLineId" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_NAME" property="planLineName" jdbcType="VARCHAR" />
+    <result column="PLAN_PARCEL_ID" property="planParcelId" jdbcType="VARCHAR" />
+    <result column="PLAN_PARCEL_NAME" property="planParcelName" jdbcType="VARCHAR" />
+    <result column="PLAN_PARCEL_GROUP_ID" property="planParcelGroupId" jdbcType="VARCHAR" />
+    <result column="PLAN_STAFF_ID" property="planStaffId" jdbcType="VARCHAR" />
+    <result column="PLAN_STAFF_NAME" property="planStaffName" jdbcType="VARCHAR" />
+    <result column="RECORD_PLAN_ID" property="recordPlanId" jdbcType="VARCHAR" />
+    <result column="RECORD_PLAN_NAME" property="recordPlanName" jdbcType="VARCHAR" />
+    <result column="RECORD_LINE_ID" property="recordLineId" jdbcType="VARCHAR" />
+    <result column="RECORD_LINE_NAME" property="recordLineName" jdbcType="VARCHAR" />
+    <result column="RECORD_PARCEL_ID" property="recordParcelId" jdbcType="VARCHAR" />
+    <result column="RECORD_PARCEL_NAME" property="recordParcelName" jdbcType="VARCHAR" />
+    <result column="RECORD_STAFF_ID" property="recordStaffId" jdbcType="VARCHAR" />
+    <result column="RECORD_STAFF_NAME" property="recordStaffName" jdbcType="VARCHAR" />
+    <result column="RECORD_TIME" property="recordTime" jdbcType="TIMESTAMP" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="PARCEL_LEVEL" property="parcelLevel" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="CHECK_STATUS" property="checkStatus" jdbcType="VARCHAR" />
+    <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+    <!--全字段-->
+    <sql id="Field-ALL">
+    ID, DATE, PLAN_LINE_PARCEL_ID,SITE_ID,SITE_NAME, PLAN_ID, PLAN_NAME, PLAN_LINE_ID, PLAN_LINE_NAME, PLAN_PARCEL_ID, PLAN_PARCEL_NAME,
+    PLAN_PARCEL_GROUP_ID,PLAN_STAFF_ID,PLAN_STAFF_NAME,RECORD_PLAN_ID,RECORD_PLAN_NAME,RECORD_LINE_ID,RECORD_LINE_NAME,RECORD_PARCEL_ID,
+    RECORD_PARCEL_NAME,RECORD_STAFF_ID,RECORD_STAFF_NAME,RECORD_TIME,DESCRIPTION,PARCEL_LEVEL,STATUS,CHECK_STATUS,CREATED_TIME
+    </sql>
+
+  <resultMap id="CountRecordMap" type="com.ylink.hibiscus.entity.logistics.record.CountRecord" >
+    <result column="siteId" property="siteId" jdbcType="VARCHAR" />
+    <result column="planId" property="planId" jdbcType="VARCHAR" />
+    <result column="planType" property="planType" jdbcType="VARCHAR" />
+    <result column="lineId" property="lineId" jdbcType="VARCHAR" />
+    <result column="countLine" property="countLine" jdbcType="VARCHAR" />
+    <result column="countAll" property="countAll" jdbcType="VARCHAR" />
+    <result column="countSuccess" property="countSuccess" jdbcType="VARCHAR" />
+    <result column="countError" property="countError" jdbcType="VARCHAR" />
+    <result column="countTodo" property="countTodo" jdbcType="VARCHAR" />
+    <result column="countLost" property="countLost" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="statistics" resultType="com.ylink.hibiscus.entity.logistics.record.CountRecord">
+    SELECT
+    t.SITE_ID  siteId,
+    t.PLAN_ID  planId,
+    t.PLAN_NAME  planName,
+    (SELECT p.TYPE FROM t_plan p WHERE p.id =t.PLAN_ID) planType,
+    t.PLAN_LINE_ID lineId,
+    t.PLAN_LINE_NAME lineName,
+    MAX(t.PLAN_STAFF_NAME) staffName,
+    COUNT(DISTINCT t.PLAN_LINE_ID )  countLine,
+    COUNT( 1 )  countAll,
+    SUM( CASE WHEN STATUS = 'SUCCESS' THEN 1 ELSE 0 END )  countSuccess,
+    SUM( CASE WHEN STATUS = 'ERROR' THEN 1 ELSE 0 END )  countError,
+    SUM( CASE WHEN STATUS = 'LOST' THEN 1 ELSE 0 END )  countLost,
+    SUM( CASE WHEN STATUS = 'TODO' THEN 1 ELSE 0 END )  countTodo
+    FROM
+    t_record_line_parcel  t
+    <where>
+      t.SITE_ID = #{siteId,jdbcType=VARCHAR}
+      AND t.DATE = #{date,jdbcType=VARCHAR}
+      AND t.STATUS != 'INVALID'
+      <if test="planId != '' and planId != null">
+        AND t.PLAN_ID = #{planId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    GROUP BY
+    t.PLAN_ID,
+    t.SITE_ID,
+    t.PLAN_LINE_ID,
+    t.PLAN_NAME,
+    t.PLAN_LINE_NAME
+  </select>
+
+  <select id="statisticsLine" resultType="com.ylink.hibiscus.entity.logistics.record.CountRecord">
+    SELECT
+    t.SITE_ID  siteId,
+    t.PLAN_ID  planId,
+    t.PLAN_NAME  planName,
+    (SELECT p.TYPE FROM t_plan p WHERE p.id =t.PLAN_ID) planType,
+    t.PLAN_LINE_ID lineId,
+    t.PLAN_LINE_NAME lineName,
+    COUNT(DISTINCT t.PLAN_LINE_ID )  countLine,
+    COUNT( 1 )  countAll,
+    SUM( CASE WHEN STATUS = 'SUCCESS' THEN 1 ELSE 0 END )  countSuccess,
+    SUM( CASE WHEN STATUS = 'ERROR' THEN 1 ELSE 0 END )  countError,
+    SUM( CASE WHEN STATUS = 'LOST' THEN 1 ELSE 0 END )  countLost,
+    SUM( CASE WHEN STATUS = 'TODO' THEN 1 ELSE 0 END )  countTodo
+    FROM
+    t_record_line_parcel  t
+    <where>
+      t.DATE = #{date,jdbcType=VARCHAR}
+      AND t.STATUS != 'INVALID'
+      <if test="siteId != '' and siteId != null">
+        AND t.SITE_ID = #{siteId,jdbcType=VARCHAR}
+      </if>
+      <if test="planId != '' and planId != null">
+        AND t.PLAN_ID = #{planId,jdbcType=VARCHAR}
+      </if>
+      <if test="lineId != '' and lineId != null">
+        AND t.PLAN_LINE_ID = #{lineId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    GROUP BY
+    t.SITE_ID,
+    t.PLAN_ID,
+    t.PLAN_NAME,
+    t.PLAN_LINE_ID,
+    t.PLAN_LINE_NAME
+  </select>
+
+  <select id="statisticsPlan" resultType="com.ylink.hibiscus.entity.logistics.record.CountRecord">
+    SELECT
+        a.siteId,
+        a.date,
+        a.planId,
+        a.planName,
+        a.cycle,
+        a.planType,
+        a.STATUS,
+        a.lineTotalNum,
+        a.lineUndoneNum,
+        a.lineDoneNum,
+        CASE WHEN ISNULL(b.countLine) THEN 0 ELSE b.countLine  END countLine,
+        CASE WHEN ISNULL(b.countAll) THEN 0 ELSE b.countAll  END countAll,
+        CASE WHEN ISNULL(b.countSuccess) THEN 0 ELSE b.countSuccess  END countSuccess,
+        CASE WHEN ISNULL(b.countError) THEN 0 ELSE b.countError  END countError,
+        CASE WHEN ISNULL(b.countLost) THEN 0 ELSE b.countLost  END countLost,
+        CASE WHEN ISNULL(b.countTodo) THEN 0 ELSE b.countTodo  END countTodo
+    FROM
+        (
+            SELECT
+                rp.SITE_ID siteId,
+                rp.DATE date,
+                rp.`NAME` planName,
+                rp.CYCLE cycle,
+                rp.TYPE planType,
+                rp.`STATUS` STATUS,
+                ( SELECT count( ID ) FROM t_record_plan_line WHERE PLAN_ID = planId AND `STATUS` = 'TODO' AND `DATE` = date ) lineUndoneNum,
+                ( SELECT count( ID ) FROM t_record_plan_line WHERE PLAN_ID = planId AND `STATUS` = 'FINISH' AND `DATE` = date ) lineDoneNum,
+                temp.*
+            FROM
+                ( SELECT PLAN_ID planId, COUNT( DISTINCT PLAN_LINE_ID ) lineTotalNum FROM `t_record_plan_line` GROUP BY planId ) temp,
+                t_record_plan rp
+            WHERE
+                temp.planId = rp.PLAN_ID
+        ) a
+            LEFT JOIN (
+            SELECT
+                PLAN_ID,
+                COUNT( DISTINCT PLAN_LINE_ID ) countLine,
+                COUNT( 1 ) countAll,
+                sum( CASE WHEN STATUS = 'SUCCESS' THEN 1 ELSE 0 END ) countSuccess,
+                sum( CASE WHEN STATUS = 'ERROR' THEN 1 ELSE 0 END ) countError,
+                sum( CASE WHEN STATUS = 'LOST' THEN 1 ELSE 0 END ) countLost,
+                sum( CASE WHEN STATUS = 'TODO' THEN 1 ELSE 0 END ) countTodo
+            FROM
+                t_record_line_parcel
+            GROUP BY
+                PLAN_ID
+        ) b ON a.planId = b.PLAN_ID
+    WHERE
+        a.date = #{date,jdbcType=VARCHAR}
+      AND a.siteId = #{siteId,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 根据计划袋编号查询 -->
+  <select id="query" resultMap="BaseResultMap">
+    SELECT * FROM t_record_line_parcel
+    WHERE PLAN_PARCEL_ID = #{planParcelId,jdbcType=VARCHAR}
+    and DATE = #{date,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 根据袋记录信息查询 -->
+  <select id="listRecordLineParcel" resultMap="BaseResultMap" parameterType="com.ylink.hibiscus.model.logistics.record.RecordLineParcelSearch">
+    SELECT * FROM t_record_line_parcel
+    <where>
+      <if test="siteId != '' and siteId != null">
+        AND SITE_ID = #{siteId,jdbcType=VARCHAR}
+      </if>
+      <if test="planId != '' and planId != null">
+        AND PLAN_ID = #{planId,jdbcType=VARCHAR}
+      </if>
+      <if test="planLineId != '' and planLineId != null">
+        AND PLAN_LINE_ID = #{planLineId,jdbcType=VARCHAR}
+      </if>
+      <if test="dateStart != '' and dateStart != null">
+        AND DATE <![CDATA[ >= ]]> #{dateStart,jdbcType=VARCHAR}
+      </if>
+      <if test="dateEnd != '' and dateEnd != null">
+        AND DATE <![CDATA[ <= ]]> #{dateEnd,jdbcType=VARCHAR}
+      </if>
+      <if test="date != '' and date != null">
+        AND DATE = #{date,jdbcType=VARCHAR}
+      </if>
+      <if test="status != '' and status != null">
+        AND STATUS = #{status,jdbcType=VARCHAR}
+      </if>
+      <if test="planName != null and planName != ''">
+        AND PLAN_NAME LIKE concat(concat('%',#{planName,jdbcType=VARCHAR}),'%')
+      </if>
+      <if test="planLineName != null and planLineName != ''">
+        AND PLAN_LINE_NAME LIKE concat(concat('%',#{planLineName,jdbcType=VARCHAR}),'%')
+      </if>
+      <if test="planParcelName != null and planParcelName != ''">
+        AND PLAN_PARCEL_NAME LIKE concat(concat('%',#{planParcelName,jdbcType=VARCHAR}),'%')
+      </if>
+      <if test="parcelLevel != null and parcelLevel != ''">
+        AND PARCEL_LEVEL = #{parcelLevel,jdbcType=VARCHAR}
+      </if>
+    </where>
+
+  </select>
+
+
+  <insert id="newRecordLineParcels">
+    INSERT IGNORE INTO t_record_line_parcel
+      (<include refid="Field-ALL"/> )
+    SELECT
+      CONCAT(#{date,jdbcType=VARCHAR},l.ID),
+      #{date,jdbcType=VARCHAR},
+      l.ID,
+      l.SITE_ID,
+      l.SITE_NAME,
+      l.PLAN_ID,
+      l.PLAN_NAME,
+      l.LINE_ID,
+      l.LINE_NAME,
+      l.PARCEL_ID,
+      l.PARCEL_NAME,
+      l.GROUP_ID,
+      l.STAFF_ID,
+      l.STAFF_NAME,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      l.PARCEL_LEVEL,
+      'TODO',
+      '',
+      now()
+    FROM
+      v_plan_line_parcel l
+    WHERE
+        l.PLAN_ID IN
+      <foreach item="item" index="index" collection="planIds" open="(" separator="," close=")">
+          #{item,jdbcType=VARCHAR}
+      </foreach>
+
+  </insert>
+
+  <!--更新出入库记录袋状态为正常-->
+  <update id="updateStatusToSuccess">
+    UPDATE t_record_line_parcel SET STATUS ='SUCCESS'
+    <where>
+      DATE = #{date}
+      AND PLAN_ID = #{planId}
+      AND PLAN_LINE_ID = #{planLineId}
+      AND STATUS = #{lineParcelStatus}
+      <if test="lineParcelStatus == 'ERROR'">
+        AND RECORD_PARCEL_ID = #{parcelId}
+      </if>
+      <if test="lineParcelStatus == 'LOST'">
+        AND PLAN_PARCEL_ID = #{parcelId}
+      </if>
+    </where>
+  </update>
+
+  <!--更新出入库记录袋状态为正常-->
+  <update id="doCheckStatus">
+    UPDATE t_record_line_parcel SET CHECK_STATUS  = #{checkStatus,jdbcType=VARCHAR}
+    <where>
+      ID = #{id,jdbcType=VARCHAR}
+    </where>
+  </update>
+
+
+</mapper>

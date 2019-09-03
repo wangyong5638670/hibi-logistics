@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ylink.hibiscus.logistics.dao.record.RecordParcelAlarmMapper" >
+  <resultMap id="BaseResultMap" type="com.ylink.hibiscus.entity.logistics.record.RecordParcelAlarm" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="DATE" property="date" jdbcType="VARCHAR" />
+    <result column="RECORD_ID" property="recordId" jdbcType="VARCHAR" />
+    <result column="SITE_ID" property="siteId" jdbcType="VARCHAR" />
+    <result column="SITE_NAME" property="siteName" jdbcType="VARCHAR" />
+    <result column="PLAN_ID" property="planId" jdbcType="VARCHAR" />
+    <result column="PLAN_NAME" property="planName" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_ID" property="planLineId" jdbcType="VARCHAR" />
+    <result column="PLAN_LINE_NAME" property="planLineName" jdbcType="VARCHAR" />
+    <result column="PLAN_PARCEL_ID" property="planParcelId" jdbcType="VARCHAR" />
+    <result column="PLAN_PARCEL_NAME" property="planParcelName" jdbcType="VARCHAR" />
+    <result column="PLAN_STAFF_ID" property="planStaffId" jdbcType="VARCHAR" />
+    <result column="PLAN_STAFF_NAME" property="planStaffName" jdbcType="VARCHAR" />
+    <result column="RECORD_PLAN_ID" property="recordPlanId" jdbcType="VARCHAR" />
+    <result column="RECORD_PLAN_NAME" property="recordPlanName" jdbcType="VARCHAR" />
+    <result column="RECORD_LINE_ID" property="recordLineId" jdbcType="VARCHAR" />
+    <result column="RECORD_LINE_NAME" property="recordLineName" jdbcType="VARCHAR" />
+    <result column="RECORD_PARCEL_ID" property="recordParcelId" jdbcType="VARCHAR" />
+    <result column="RECORD_PARCEL_NAME" property="recordParcelName" jdbcType="VARCHAR" />
+    <result column="RECORD_STAFF_ID" property="recordStaffId" jdbcType="VARCHAR" />
+    <result column="RECORD_STAFF_NAME" property="recordStaffName" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="HANDLE_STATUS" property="handleStatus" jdbcType="VARCHAR" />
+    <result column="HANDLE_REMARK" property="handleRemark" jdbcType="VARCHAR" />
+    <result column="HANDLE_TIME" property="handleTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!---->
+  <select id="queryWithRecordId" resultMap="BaseResultMap">
+    select * from t_record_parcel_alarm where RECORD_ID = #{recordId}
+  </select>
+
+  <!--queryRecordParcelAlarm-->
+  <select id="queryRecordParcelAlarm" resultMap="BaseResultMap">
+    select * from t_record_parcel_alarm
+    WHERE PLAN_ID = #{planId,jdbcType=VARCHAR}
+    AND DATE = #{date,jdbcType=VARCHAR}
+    AND PLAN_LINE_ID = #{planLineId,jdbcType=VARCHAR}
+    AND RECORD_PARCEL_ID = #{recordParcelId,jdbcType=VARCHAR}
+  </select>
+
+
+</mapper>

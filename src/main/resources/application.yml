@@ -1,0 +1,101 @@
+spring:
+  datasource:
+    name: ${datasource.name}
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: ${datasource.db.url}
+    username: ${datasource.db.name}
+    password: ${datasource.db.password}
+    driver-class-name: ${datasource.db.driver}
+    druid:
+      filters: stat
+      max-active: 100
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 'x' from DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+  aop:
+    proxy-target-class: true
+#  zipkin:
+#    sender:
+#      type: rabbit
+#    enabled: true
+#    locator:
+#      discovery:
+#        enabled: true
+#  sleuth:
+#    web:
+#      skip-pattern: "/api-docs.*|/autoconfig|/configprops|/dump|/actuator/health|/info|/metrics.*|/mappings|/trace|/swagger.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|/test"
+#    sampler:
+#      probability: 1.0
+#  rabbitmq:
+#    host: ${rabbitmq.host}
+#    port: ${rabbitmq.port}
+#    username: ${rabbitmq.username}
+#    password: ${rabbitmq.password}
+#    publisher-confirms: true
+  jackson:
+    serialization:
+      indent_output: true #格式化输出
+      fail_on_empty_beans: false #忽略无法转换的对象
+    default-property-inclusion: non_empty
+    deserialization:
+      fail_on_unknown_properties: false
+    parser:
+      allow_unquoted_control_chars: true #允许出现特殊字符和转义符
+      allow_single_quotes: true  #允许出现单引号
+    time-zone: GMT+8 #时区
+    locale: zh # 国家
+server:
+  port: ${application.server.port}
+mapper:
+  mappers:
+  - tk.mybatis.mapper.common.Mapper
+  not-empty: true
+  before: true
+mybatis:
+  mapper-locations: classpath:config/mapper/**/*.xml
+  config-location: classpath:config/mybatis/mybatis-config.xml
+  type-aliases-package: com.ylink.hibiscus.entity.*
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+  auto-runtime-dialect: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: shutdown,health #暴露接口:优雅停机,监控服务
+  endpoint:
+    health:
+      show-details: always
+info:
+  author: YLINK
+  url: www.ylink.com.cn
+  name: hibi-springcloud-logistics
+  version: 1.0
+feign:
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+  okhttp:
+    enabled: true
+  client:
+    config:
+      default:
+        readTimeout: 15000
+        connectTimeout: 5000
+        errorDecoder: com.ylink.hibiscus.common.base.support.feign.decoder.ExceptionErrorDecoder
+
